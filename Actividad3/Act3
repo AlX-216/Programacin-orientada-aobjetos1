@@ -1,82 +1,135 @@
-import matplotlib.pyplot as plt
+mport java.util.Scanner;
+ 
+public class Main {
+    public static void main(String[] args) {
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.println("Bienvenido al sistema de gestión de productos\n");
+            
+            // Crear y llenar los datos de dos productos
+            Producto producto1 = ingresarDatosProductoConConfirmacion(scanner, 1);
+            Producto producto2 = ingresarDatosProductoConConfirmacion(scanner, 2);
+            
+            // Mostrar los detalles de los productos
+            System.out.println("\nDetalles del primer producto:");
+            producto1.mostrarProducto();
+            
+            System.out.println("\nDetalles del segundo producto:");
+            producto2.mostrarProducto();
+            
+            // Comparar productos y mostrar el resultado
+            Producto productoMayorPrecio = compararProductos(producto1, producto2);
+            System.out.println("\nEl producto con mayor precio de venta es: " + productoMayorPrecio.getDescripcion());
+        }
+    }
+ 
+    // Método para ingresar datos de un producto con confirmación
+    private static Producto ingresarDatosProductoConConfirmacion(Scanner scanner, int numeroProducto) {
+        Producto producto;
+        while (true) {
+            producto = ingresarDatosProducto(scanner, numeroProducto);
+            System.out.println("\nDatos del producto ingresados:");
+            producto.mostrarProducto();
+            System.out.print("\n¿Son correctos los datos? (s/n): ");
+            String confirmacion = scanner.nextLine().trim().toLowerCase();
+            if (confirmacion.equals("s")) {
+                break;
+            } else {
+                System.out.println("\nReingresando los datos del producto...");
+            }
+        }
+        return producto;
+    }
+ 
+    // Método para ingresar datos de un producto
+    private static Producto ingresarDatosProducto(Scanner scanner, int numeroProducto) {
+        Producto producto = new Producto();
+        System.out.println("\nIngrese los datos del producto " + numeroProducto + ":");
+ 
+        System.out.print("Descripcion: ");
+        producto.setDescripcion(scanner.nextLine().trim());
+ 
+        System.out.print("Código: ");
+        producto.setCodigo(scanner.nextLine().trim());
 
-# Algoritmo FCFS
-def fcfs(requests, start):
-    order = [start] + requests
-    movements = sum(abs(order[i+1] - order[i]) for i in range(len(order)-1))
-    return order, movements
-
-# Algoritmo SSTF
-def sstf(requests, start):
-    order = [start]
-    pending = requests[:]
-    current = start
-    while pending:
-        next_request = min(pending, key=lambda r: abs(r - current))
-        pending.remove(next_request)
-        order.append(next_request)
-        current = next_request
-    movements = sum(abs(order[i+1] - order[i]) for i in range(len(order)-1))
-    return order, movements
-
-# Algoritmo SCAN
-
-def scan(requests, start, max_track=199):
-    left = sorted([r for r in requests if r < start], reverse=True)
-    right = sorted([r for r in requests if r >= start])
-    order = [start] + right + [max_track] + left
-    movements = sum(abs(order[i+1] - order[i]) for i in range(len(order)-1))
-    return order, movements
-
-# Gráfico del movimiento de la cabeza
-def plot_movement(order, algo_name):
-    plt.plot(order, range(len(order)), marker='o', linestyle='-')
-    plt.title(f'Movimiento del disco - {algo_name}')
-    plt.xlabel('Posición de pista')
-    plt.ylabel('Orden de acceso')
-    plt.gca().invert_yaxis()
-    plt.show()
-
-# Datos de entrada
-requests = [95, 180, 34, 119, 11, 123, 62, 64]
-start = 50
-
-# FCFS
-order_fcfs, moves_fcfs = fcfs(requests, start)
-plot_movement(order_fcfs, "FCFS")
-print("FCFS - Orden de atención:", order_fcfs)
-print("FCFS - Movimientos totales:", moves_fcfs)
-
-# SSTF
-order_sstf, moves_sstf = sstf(requests, start)
-plot_movement(order_sstf, "SSTF")
-print("SSTF - Orden de atención:", order_sstf)
-print("SSTF - Movimientos totales:", moves_sstf)
-
-# SCAN
-order_scan, moves_scan = scan(requests, start)
-plot_movement(order_scan, "SCAN")
-print("SCAN - Orden de atención:", order_scan)
-print("SCAN - Movimientos totales:", moves_scan)
-
-# Análisis de resultados
-results = {
-    "FCFS": moves_fcfs,
-    "SSTF": moves_sstf,
-    "SCAN": moves_scan
+        System.out.print("Tipo: ");
+        producto.setTipo(scanner.nextLine().trim());
+ 
+        producto.setCosto(leerDouble(scanner, "Costo: "));
+        producto.setImpuesto(leerDouble(scanner, "Impuesto (%): "));
+ 
+        return producto;
+    }
+ 
+    // Método para leer un valor double válido
+    private static double leerDouble(Scanner scanner, String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                return Double.parseDouble(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Entrada inválida. Por favor, ingrese un número válido.");
+            }
+        }
+    }
+ 
+    // Método para comparar dos productos
+    private static Producto compararProductos(Producto producto1, Producto producto2) {
+        double precio1 = producto1.calcularPrecio(20); // Utilidad del 20%
+        double precio2 = producto2.calcularPrecio(20);
+ 
+        return (precio1 >= precio2) ? producto1 : producto2;
+    }
+}
+ 
+class Producto {
+    private String descripcion;
+    private String codigo;
+    private String tipo;
+    private double costo;
+    private double impuesto;
+ 
+    // Getters
+    public String getDescripcion() {
+        return descripcion;
+    }
+ 
+    // Setters
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+ 
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+ 
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+ 
+    public void setCosto(double costo) {
+        this.costo = costo;
+    }
+ 
+    public void setImpuesto(double impuesto) {
+        this.impuesto = impuesto;
+    }
+ 
+    // Mostrar detalles del producto
+    public void mostrarProducto() {
+        System.out.println("Descripción: " + descripcion);
+        System.out.println("Código: " + codigo);
+        System.out.println("Tipo: " + tipo);
+        System.out.println("Costo: $" + String.format("%.2f", costo));
+        System.out.println("Impuesto: " + String.format("%.2f", impuesto) + "%");
+    }
+ 
+    // Calcular precio de venta
+    public double calcularPrecio(double utilidad) {
+        double precioSinImpuesto = costo + (costo * (utilidad / 100));
+        return precioSinImpuesto + (precioSinImpuesto * (impuesto / 100));
+    }
 }
 
-print("Análisis de resultados:")
-for algo, moves in results.items():
-    print(f"{algo}: {moves} movimientos")
-
-best = min(results, key=results.get)
-print(f"El algoritmo más eficiente es {best} porque tiene el menor número de movimientos.")
-
-# Ventajas y desventajas breves
-def analysis():
-    print("\nVentajas y desventajas de los algoritmos:")
-    print("FCFS: Simple y justo, pero puede ser ineficiente con secuencias largas.")
     print("SSTF: Optimiza movimientos pero puede causar inanición de solicitudes lejanas.")
     print("SCAN: Equilibra el rendimiento y la justicia, aunque favorece las solicitudes centrales.")
 
