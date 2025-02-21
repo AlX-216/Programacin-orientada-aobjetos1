@@ -1,1 +1,191 @@
+package com.mycompany.act_en_clase;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class Producto {
+    private String nombre;
+    private double precio;
+
+    public Producto(String nombre, double precio) {
+        this.nombre = nombre;
+        this.precio = precio;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+}
+
+class Cliente {
+    private String nombre;
+    private int edad;
+    private boolean esVIP;
+
+    public Cliente(String nombre, int edad, boolean esVIP) {
+        this.nombre = nombre;
+        this.edad = edad;
+        this.esVIP = esVIP;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public int getEdad() {
+        return edad;
+    }
+
+    public boolean esVIP() {
+        return esVIP;
+    }
+}
+
+interface Pago {
+    void procesarPago(double monto);
+}
+
+class PagoEfectivo implements Pago {
+    @Override
+    public void procesarPago(double monto) {
+        System.out.println("Pago en efectivo por: $" + monto);
+    }
+}
+
+class PagoTarjeta implements Pago {
+    @Override
+    public void procesarPago(double monto) {
+        System.out.println("Pago con tarjeta por: $" + monto);
+    }
+}
+
+class PagoPayPal implements Pago {
+    @Override
+    public void procesarPago(double monto) {
+        System.out.println("Pago con PayPal por: $" + monto);
+    }
+}
+
+class FabricaPago {
+    public static Pago crearPago(String tipo) {
+        switch (tipo.toLowerCase()) {
+            case "efectivo":
+                return new PagoEfectivo();
+            case "tarjeta":
+                return new PagoTarjeta();
+            case "paypal":
+                return new PagoPayPal();
+            default:
+                throw new IllegalArgumentException("Método de pago no soportado: " + tipo);
+        }
+    }
+}
+
+class Pedido {
+    private List<Producto> productos;
+    private Cliente cliente;
+
+    public Pedido(List<Producto> productos, Cliente cliente) {
+        this.productos = productos;
+        this.cliente = cliente;
+    }
+
+    public double calcularTotal() {
+        double total = 0;
+        for (Producto producto : productos) {
+            total += producto.getPrecio();
+        }
+        return total;
+    }
+
+    public double aplicarDescuento(double total) {
+        if (cliente.esVIP()) {
+            return total * 0.9;
+        }
+        return total;
+    }
+
+    public void procesarPedido(Pago metodoPago) {
+        double total = calcularTotal();
+        total = aplicarDescuento(total);
+        metodoPago.procesarPago(total);
+    }
+}
+
+public class Act_en_clase {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Ingrese su nombre: ");
+        String nombre = scanner.nextLine();
+
+        System.out.print("Ingrese su edad: ");
+        int edad = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("¿Es cliente VIP? (si/no): ");
+        boolean esVIP = scanner.nextLine().equalsIgnoreCase("si");
+
+        Cliente cliente = new Cliente(nombre, edad, esVIP);
+
+        List<Producto> menu = new ArrayList<>();
+        menu.add(new Producto("Tacos al Pastor", 12.0));
+        menu.add(new Producto("Pozole", 50.0));
+        menu.add(new Producto("Chiles en Nogada", 80.0));
+        menu.add(new Producto("Enchiladas", 40.0));
+        menu.add(new Producto("Mole Poblano", 70.0));
+        menu.add(new Producto("Tamales", 15.0));
+        menu.add(new Producto("Quesadillas", 25.0));
+        menu.add(new Producto("Chilaquiles", 30.0));
+        menu.add(new Producto("Guacamole", 20.0));
+        menu.add(new Producto("Sopes", 18.0));
+        menu.add(new Producto("Pepsi", 15.0));
+        menu.add(new Producto("Boing de Mango", 12.0));
+        menu.add(new Producto("Boing de Guayaba", 12.0));
+        menu.add(new Producto("Agua de Jamaica", 10.0));
+        menu.add(new Producto("Agua de Horchata", 10.0));
+        menu.add(new Producto("Refresco de Limón", 15.0));
+        menu.add(new Producto("Cerveza", 25.0));
+        menu.add(new Producto("Tequila", 50.0));
+        menu.add(new Producto("Margarita", 60.0));
+        menu.add(new Producto("Agua Mineral", 8.0));
+        menu.add(new Producto("Jugo de Naranja", 18.0));
+        menu.add(new Producto("Café de Olla", 12.0));
+
+        List<Producto> pedidoCliente = new ArrayList<>();
+
+        System.out.println("Menú:");
+        for (int i = 0; i < menu.size(); i++) {
+            System.out.println((i + 1) + ". " + menu.get(i).getNombre() + " - $" + menu.get(i).getPrecio());
+        }
+
+        while (true) {
+            System.out.print("Seleccione un producto por número (0 para finalizar): ");
+            int seleccion = scanner.nextInt();
+            if (seleccion == 0) {
+                break;
+            }
+            if (seleccion < 1 || seleccion > menu.size()) {
+                System.out.println("Selección inválida.");
+                continue;
+            }
+            pedidoCliente.add(menu.get(seleccion - 1));
+            System.out.println(menu.get(seleccion - 1).getNombre() + " agregado al pedido.");
+        }
+
+        Pedido pedido = new Pedido(pedidoCliente, cliente);
+
+        System.out.print("Seleccione método de pago (efectivo/tarjeta/paypal): ");
+        String metodoPago = scanner.next();
+
+        Pago pago = FabricaPago.crearPago(metodoPago);
+        pedido.procesarPedido(pago);
+
+        scanner.close();
+    }
+}
