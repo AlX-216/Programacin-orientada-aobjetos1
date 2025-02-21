@@ -1,1 +1,160 @@
+package com.mycompany.act4;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+public class Act4 {
+
+    static class Profesor {
+        private final String nombre;
+        private final String numNomina;
+        private final double sueldoPorHora;
+        private final Materia materia;
+
+        // Constructor con parámetros
+        public Profesor(String nombre, String numNomina, double sueldoPorHora, Materia materia) {
+            this.nombre = Objects.requireNonNull(nombre, "El nombre no puede ser nulo");
+            this.numNomina = Objects.requireNonNull(numNomina, "El número de nómina no puede ser nulo");
+            this.sueldoPorHora = sueldoPorHora;
+            this.materia = Objects.requireNonNull(materia, "La materia no puede ser nula");
+        }
+
+        // Getters
+        public String getNombre() { return nombre; }
+        public String getNumNomina() { return numNomina; }
+        public double getSueldoPorHora() { return sueldoPorHora; }
+        public Materia getMateria() { return materia; }
+
+        public double calcularSueldoSemanal(int horas) {
+            if (horas < 0) {
+                throw new IllegalArgumentException("Las horas no pueden ser negativas");
+            }
+            return sueldoPorHora * horas;
+        }
+
+        @Override
+        public String toString() {
+            return "Profesor{" +
+                    "nombre='" + nombre + '\'' +
+                    ", numNomina='" + numNomina + '\'' +
+                    ", sueldoPorHora=" + sueldoPorHora +
+                    ", materia=" + materia.getNombre() +
+                    '}';
+        }
+    }
+
+    static class Alumno {
+        private final String matricula;
+        private final String nombre;
+        private final int edad;
+        private final Curso curso;
+
+        // Constructor con parámetros
+        public Alumno(String matricula, String nombre, int edad, Curso curso) {
+            this.matricula = Objects.requireNonNull(matricula, "La matrícula no puede ser nula");
+            this.nombre = Objects.requireNonNull(nombre, "El nombre no puede ser nulo");
+            this.edad = edad;
+            this.curso = Objects.requireNonNull(curso, "El curso no puede ser nulo");
+        }
+
+        // Getters
+        public String getMatricula() { return matricula; }
+        public String getNombre() { return nombre; }
+        public int getEdad() { return edad; }
+        public Curso getCurso() { return curso; }
+
+        @Override
+        public String toString() {
+            return "Alumno{" +
+                    "matricula='" + matricula + '\'' +
+                    ", nombre='" + nombre + '\'' +
+                    ", edad=" + edad +
+                    ", curso=" + curso.getNombre() +
+                    '}';
+        }
+    }
+
+    static class Materia {
+        private final String nombre;
+        private final String clave;
+        private final int creditos;
+        private final int horasSemanales;
+
+        // Constructor con parámetros
+        public Materia(String nombre, String clave, int creditos, int horasSemanales) {
+            this.nombre = Objects.requireNonNull(nombre, "El nombre no puede ser nulo");
+            this.clave = Objects.requireNonNull(clave, "La clave no puede ser nula");
+            this.creditos = creditos;
+            this.horasSemanales = horasSemanales;
+        }
+
+        // Getters
+        public String getNombre() { return nombre; }
+        public String getClave() { return clave; }
+        public int getCreditos() { return creditos; }
+        public int getHorasSemanales() { return horasSemanales; }
+
+        @Override
+        public String toString() {
+            return "Materia{" +
+                    "nombre='" + nombre + '\'' +
+                    ", clave='" + clave + '\'' +
+                    ", creditos=" + creditos +
+                    ", horasSemanales=" + horasSemanales +
+                    '}';
+        }
+    }
+
+    static class Curso {
+        private final String nombre;
+        private final List<Materia> materias;
+
+        // Constructor con parámetros
+        public Curso(String nombre, List<Materia> materias) {
+            this.nombre = Objects.requireNonNull(nombre, "El nombre no puede ser nulo");
+            this.materias = new ArrayList<>(Objects.requireNonNull(materias, "Las materias no pueden ser nulas"));
+        }
+
+        // Getters
+        public String getNombre() { return nombre; }
+        public List<Materia> getMaterias() { return new ArrayList<>(materias); }
+
+        public int obtenerCreditosTotales() {
+            return materias.stream().mapToInt(Materia::getCreditos).sum();
+        }
+
+        @Override
+        public String toString() {
+            return "Curso{" +
+                    "nombre='" + nombre + '\'' +
+                    ", materias=" + materias +
+                    '}';
+        }
+    }
+
+    public static void main(String[] args) {
+        // Crear materias
+        Materia matematicas = new Materia("Matemáticas", "MAT101", 5, 4);
+        Materia fisica = new Materia("Física", "FIS102", 4, 3);
+        Materia quimica = new Materia("Química", "QUI103", 3, 3);
+
+        // Crear un curso
+        List<Materia> materiasCurso1 = new ArrayList<>();
+        materiasCurso1.add(matematicas);
+        materiasCurso1.add(fisica);
+        materiasCurso1.add(quimica);
+        Curso curso1 = new Curso("Ciencias Exactas", materiasCurso1);
+
+        // Crear un profesor
+        Profesor profesor1 = new Profesor("Juan Pérez", "12345", 250, matematicas);
+
+        // Crear un alumno
+        Alumno alumno1 = new Alumno("A001", "María López", 18, curso1);
+
+        // Mostrar datos
+        System.out.println(alumno1);
+        System.out.println(profesor1);
+        System.out.println("Créditos del curso: " + curso1.obtenerCreditosTotales());
+    }
+}
