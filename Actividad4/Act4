@@ -144,6 +144,7 @@ public class Act4 {
         materiasCurso1.add(matematicas);
         materiasCurso1.add(fisica);
         materiasCurso1.add(quimica);
+
         Curso curso1 = new Curso("Ciencias Exactas", materiasCurso1);
 
         // Crear un profesor
